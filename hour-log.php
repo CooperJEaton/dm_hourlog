@@ -24,7 +24,7 @@ function dm_hourlog_install () {
 
 		$sql = "CREATE TABLE $table_name (
 				id mediumint(9) NOT NULL AUTO_INCREMENT,
- 				user tinytext NOT NULL,
+ 				user_id tinytext NOT NULL,
  				job_number tinytext NOT NULL,
  				date date DEFAULT '0000-00-00' NOT NULL,
  				clock_in time DEFAULT '00:00:00' NOT NULL,
@@ -68,10 +68,10 @@ function dm_hourlog_install_data() {
 function dm_hourlog_drop()
 {
     global $wpdb;
-    $table_name = $wpdb->prefix . 'hourlog';
-    $sql = "DROP TABLE IF EXISTS $table_name";
-    $wpdb->query($sql);
-    delete_option( 'dm_hl_version', $dm_hl_version );
+    	$table_name = $wpdb->prefix . 'hourlog';
+    	$sql = "DROP TABLE IF EXISTS $table_name";
+    	$wpdb->query($sql);
+    	delete_option( 'dm_hl_version', $dm_hl_version );
 }
 
 // This will run the table creation function 'dm_hourlog_install' upon plugin activation
@@ -83,7 +83,7 @@ register_activation_hook( __FILE__, 'dm_hourlog_install_data' );
 */
 
 // This will run the table drop function 'dm_hourlog_drop' upon plugin deactivation
-register_deactivation_hook(__FILE__, 'dm_hourlog_drop');
+register_deactivation_hook(__FILE__, 'dm_hourlog_drop' );
 
 /* 
 
@@ -94,17 +94,43 @@ THIS IS WHERE THE FUN BEGINS! I am going to try and attempt to create a view in 
 
 //This should add the hourlog onto your admin menu
 function dm_hourlog_menu(){
-  	add_menu_page('DM - Hour Log', 'Hour Log', 'manage_options', 'dm_hourlog_menu', 'dm_hourlog_functions', 
-  		'dashicons-clock', '3');
+  	add_menu_page('DM - Hour Log', 'Hour Log', 'manage_options', 'dm_hourlog_menu', 'dm_hourlog_functions', 'dashicons-clock', '3');
 }
+
 add_action('admin_menu', 'dm_hourlog_menu');
 
+//change
 
-//This should allow you to fuck with the hour log...
+
+// This is the start of the basic GUI
 function dm_hourlog_functions(){
-	echo '<div class="wrap"><div id="hourlog_view" class="icon32"><br></div>
-    <h2>Digital Manatee - Hour Log</h2>
-    </div>';
+
+	echo '
+
+		<h1>Digital Manatee - Hour Log</h1><br>
+
+	';
+
+	$current_user = wp_get_current_user();
+	echo '<h2>' . 'Welcome back, ' . $current_user->user_login . '!' . '</hr>' . '<br>' . '<br>';
+
+
+// Here's the button to clock in and clock out - we'll use this button to add data to the table
+	echo '
+    
+    	<input id="clockin_button" type="button" value="Clock In" onclick="ClockInClockOutButton()"></input>
+		<script>
+		function ClockInClockOutButton() {
+    		if (document.getElementById("clockin_button").value=="Clock In"){
+    		document.getElementById("clockin_button").value="Clock Out";
+    		} else {
+    		document.getElementById("clockin_button").value="Clock In";
+    		}
+		}
+		</script>
+
+	 ';
+
 }
 
 
